@@ -1,6 +1,6 @@
 #include "utils.h"
 #include "group.h"
-#include "logic_parser.h"
+#include "parser.h"
 
 int main(int argc, char *const *argv) {
     LogicExpData min = logic_expression_parser(argc, argv);

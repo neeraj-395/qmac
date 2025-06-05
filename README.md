@@ -1,5 +1,5 @@
 # Qmac
-An implementation of the Quine-McCluskey algorithm for Boolean function minimization, written in C.
+An implementation of the Quine-McCluskey Algorithm for Boolean function minimization, written in C.
 
 ## 📦 Features
 
@@ -17,13 +17,13 @@ An implementation of the Quine-McCluskey algorithm for Boolean function minimiza
 ### 🛠️ Compile
 
 ```bash
-gcc -o qmac ./src/*.c
+make or gcc -o build/qmac ./src/*.c
 ````
 
 ### ▶️ Usage
 
 ```bash
-./qmac -v <var_count> -m <m-terms> -d <d-terms>
+./build/qmac -v <var_count> -m <m-terms> -d <d-terms>
 ```
 
 * `-v`: Number of variables (e.g. 3 for A, B, C) **\[Required]**
@@ -36,20 +36,28 @@ gcc -o qmac ./src/*.c
 ### 📌 Example
 
 ```bash
-./qmac -v 3 -m 1,3,5 -d 0,2,7
+./build/qmac -v 3 -m 1,3,5 -d 0,2,7
 ```
 
 ## 🗂️ Project Structure
 
 ```
-qmac/
+qmac
+├── build
+│   └── qmac
+├── include
+│   ├── group.h
+│   ├── helper.h
+│   ├── minterm.h
+│   ├── parser.h
+│   └── utils.h
 ├── LICENSE
+├── Makefile
 ├── README.md
 └── src
-    ├── group.h              # Grouping and simplification logic
-    ├── helper.h             # Common macros (e.g., SAFE_ALLOC)
-    ├── logic_parser.h       # CLI argument parsing and struct setup
-    ├── main.c               # Entry point: combines everything
-    ├── minterm.h            # Minterm structure and manipulation
-    └── utils.h              # Utility functions
+    ├── group.c
+    ├── main.c
+    ├── minterm.c
+    ├── parser.c
+    └── utils.c
 ````
