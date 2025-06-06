@@ -13,7 +13,7 @@ TARGET := $(BUILD_DIR)/qmac
 all: $(BUILD_DIR) $(TARGET)
 
 $(TARGET): $(OBJS)
-	$(CC) $(CFLAGS) -o $@ $^ -lm
+	$(CC) $(CFLAGS) -o $@ $^
 	rm -f $(OBJS)
 
 $(BUILD_DIR)/%.o: $(SRC_DIR)/%.c

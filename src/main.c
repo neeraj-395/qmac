@@ -1,6 +1,7 @@
-#include "utils.h"
-#include "group.h"
-#include "parser.h"
+#include "../include/utils.h"
+#include "../include/parser.h"
+#include "../include/minterm.h"
+#include "../include/group.h"
 
 int main(int argc, char *const *argv) {
     LogicExpData min = logic_expression_parser(argc, argv);

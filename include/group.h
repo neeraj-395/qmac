@@ -1,13 +1,11 @@
 #ifndef GROUP_H
 #define GROUP_H
 
-#include <stdlib.h>     // malloc, realloc
-#include <string.h>     // memset
-
-#include "helper.h"     // SAFE_ALLOC
-#include "minterm.h"    // all(*)
+#include <stddef.h>
 
 #define MTGROUP_GROWTH_FACTOR 2
+
+typedef struct __minterm_data__ Minterm;
 
 typedef struct __minterm_group_data__{
     Minterm    *minterms;

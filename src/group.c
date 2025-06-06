@@ -1,5 +1,9 @@
 #include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
 
+#include "../include/helper.h"
+#include "../include/minterm.h"
 #include "../include/group.h"
 
 MintermGroup group_create(size_t capacity) {

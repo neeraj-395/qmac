@@ -3,7 +3,6 @@
 #include <string.h>     // strtok, strlen
 #include <getopt.h>     // getopt, optarg
 
-
 #include "../include/helper.h"     // SAFE_ALLOC
 #include "../include/parser.h"     // function prototypes
 
