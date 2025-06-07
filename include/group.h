@@ -3,32 +3,24 @@
 
 #include <stddef.h>
 
-#define MTGROUP_GROWTH_FACTOR 2
+#define IG_GROWTH_FACTOR 2
 
-typedef struct __minterm_data__ Minterm;
+typedef struct __implicant__ Implicant;
 
-typedef struct __minterm_group_data__{
-    Minterm    *minterms;
+typedef struct __implicant_group__{
+    Implicant  *implicants;
     size_t      capacity;
     size_t      size;
-} MintermGroup;
+} ImpGroup;
 
-MintermGroup group_create(size_t capacity);
-
-void group_update_capacity(MintermGroup *a, size_t newcapacity);
-
-void group_add_minterm(MintermGroup *a, const Minterm min);
-
-void group_clear(MintermGroup *a);
-
-void group_destroy(MintermGroup *a);
-
-void group_combine(const MintermGroup *a, const MintermGroup *b, MintermGroup *c);
-
-void group_uncombined_terms(MintermGroup *src, MintermGroup *dest);
-
-void group_describe(const MintermGroup *a, const char *name);
-
-void group_print(const MintermGroup *a, const char* name);
+ImpGroup group_create(size_t capacity);
+void group_update_capacity(ImpGroup *a, size_t newcapacity);
+void group_add_minterm(ImpGroup *a, const Implicant min);
+void group_clear(ImpGroup *a);
+void group_destroy(ImpGroup *a);
+void group_combine(const ImpGroup *a, const ImpGroup *b, ImpGroup *c);
+void group_uncombined_terms(ImpGroup *src, ImpGroup *dest);
+void group_describe(const ImpGroup *a, const char *name);
+void group_print(const ImpGroup *a, const char* name);
 
 #endif // GROUP_H

@@ -3,69 +3,69 @@
 #include <string.h>
 
 #include "../include/helper.h"
-#include "../include/minterm.h"
+#include "../include/implicant.h"
 #include "../include/group.h"
 
-MintermGroup group_create(size_t capacity) {
-    return (MintermGroup) { 
-        .minterms = SAFE_ALLOC(malloc(capacity * sizeof(Minterm))), 
+ImpGroup group_create(size_t capacity) {
+    return (ImpGroup) { 
+        .implicants = SAFE_ALLOC(malloc(capacity * sizeof(Implicant))), 
         .size = 0, .capacity = capacity
     };
 }
 
-void group_update_capacity(MintermGroup *a, size_t newcapacity) {
-    const size_t newsize = newcapacity * sizeof(Minterm);
-    a->minterms = SAFE_ALLOC(realloc(a->minterms, newsize));
+void group_update_capacity(ImpGroup *a, size_t newcapacity) {
+    const size_t newsize = newcapacity * sizeof(Implicant);
+    a->implicants = SAFE_ALLOC(realloc(a->implicants, newsize));
     if(newcapacity < a->size) a->size = newcapacity;
     a->capacity = newcapacity;
 }
 
-void group_add_minterm(MintermGroup *a, const Minterm min) {
+void group_add_minterm(ImpGroup *a, const Implicant min) {
     if(a->size >= a->capacity) {
-        size_t newcap = a->capacity * MTGROUP_GROWTH_FACTOR;
+        size_t newcap = a->capacity * IG_GROWTH_FACTOR;
         group_update_capacity(a, newcap);
     } 
-    a->minterms[a->size++] = min;
+    a->implicants[a->size++] = min;
 }
 
-void group_clear(MintermGroup *a) {
-    memset(a->minterms, 0, a->capacity * sizeof(Minterm));
+void group_clear(ImpGroup *a) {
+    memset(a->implicants, 0, a->capacity * sizeof(Implicant));
     a->size = 0;
 }
 
-void group_destroy(MintermGroup *a) {
-    free(a->minterms); 
-    memset(a, 0, sizeof(MintermGroup));
+void group_destroy(ImpGroup *a) {
+    free(a->implicants); 
+    memset(a, 0, sizeof(ImpGroup));
 }
 
-void group_combine(const MintermGroup *a, const MintermGroup *b, MintermGroup *c) {
+void group_combine(const ImpGroup *a, const ImpGroup *b, ImpGroup *c) {
     for(size_t i = 0; i < a->size; i++) {
         for(size_t j = 0; j < b->size; j++) {
-            if(!mt_can_combine(&a->minterms[i], &b->minterms[j])) continue;
-            mt_set_combined(&a->minterms[i], &b->minterms[j]);
+            if(!imp_can_combine(&a->implicants[i], &b->implicants[j])) continue;
+            imp_set_combined(&a->implicants[i], &b->implicants[j]);
 
-            if(mt_implies(&a->minterms[i], &b->minterms[j])) continue;
-            group_add_minterm(c, mt_combine(&a->minterms[i], &b->minterms[j]));
+            if(imp_implies(&a->implicants[i], &b->implicants[j])) continue;
+            group_add_minterm(c, imp_combine(&a->implicants[i], &b->implicants[j]));
         }
     }
 }
 
-void group_uncombined_terms(MintermGroup *src, MintermGroup *dest) {
+void group_uncombined_terms(ImpGroup *src, ImpGroup *dest) {
     for(size_t i = 0; i < src->size; i++) {
-        if(!src->minterms[i].is_combined && !src->minterms[i].is_dontcare) {
-            group_add_minterm(dest, src->minterms[i]);
-            src->minterms[i].is_combined = true;
+        if(!src->implicants[i].is_combined && !src->implicants[i].is_dontcare) {
+            group_add_minterm(dest, src->implicants[i]);
+            src->implicants[i].is_combined = true;
         }
     }
 }
 
-void group_describe(const MintermGroup *a, const char *name) {
+void group_describe(const ImpGroup *a, const char *name) {
     printf("<Group[%s]: %p -> size: %lu -> capacity: %lu>\n",
-            name, a->minterms, a->size, a->capacity);
+            name, a->implicants, a->size, a->capacity);
 }
 
-void group_print(const MintermGroup *a, const char* name) {
+void group_print(const ImpGroup *a, const char* name) {
     printf("<Group[%s]: %p -> size: %lu -> capacity: %lu>\n",
-            name, a->minterms, a->size, a->capacity);
-    for(size_t j = 0; j < a->size; j++) mt_print(&a->minterms[j]);
+            name, a->implicants, a->size, a->capacity);
+    for(size_t j = 0; j < a->size; j++) imp_print(&a->implicants[j]);
 }

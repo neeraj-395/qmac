@@ -3,14 +3,10 @@
 
 #include <stdint.h>
 
-#define BINARY_CHOICE 0x02
+uint16_t nCr(uint8_t n, uint8_t r);
 
-uint16_t nCr(uint16_t n, uint16_t r);
+unsigned popcount(unsigned n);
 
-uint16_t permutation_with_choices (
-    uint16_t    num_items, 
-    uint8_t     num_items_to_select, 
-    uint8_t     num_choices
-);
+uint32_t max_combination(uint8_t var_count, uint8_t minimization_level);
 
 #endif // UTILS_H

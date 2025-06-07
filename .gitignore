@@ -52,5 +52,6 @@ Mkfile.old
 dkms.conf
 
 # Other
+bin
 build
-.vscode
+.*

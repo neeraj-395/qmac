@@ -1,23 +1,24 @@
 #ifndef PARSER_H
 #define PARSER_H
 
+#include <stddef.h>
 #include <stdint.h>
 
-typedef struct LogicExpData {
+typedef struct ParsedInput {
     uint16_t *included_terms;
-    uint16_t  included_count;
+    size_t    included_count;
     uint16_t *excluded_terms;
-    uint16_t  excluded_count;
+    size_t    excluded_count;
     uint8_t   variable_count;
-} LogicExpData;
+} ParsedInput;
 
 void print_usage(const char *prog_name);
 
 uint16_t *parse_terms(char *arg, uint16_t *count);
 
-void free_logic_expression_data(LogicExpData *td);
+ParsedInput input_parser(int argc, char *const *argv);
 
-LogicExpData logic_expression_parser(int argc, char *const *argv);
+void free_parsed_data(ParsedInput *td);
 
 
 #endif // PARSER_H

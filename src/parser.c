@@ -22,7 +22,7 @@ uint16_t *parse_terms(char *arg, uint16_t *count) {
     return SAFE_ALLOC(realloc(terms, (*count) * sizeof(uint16_t)));
 }
 
-LogicExpData logic_expression_parser(int argc, char *const *argv) {
+ParsedInput input_parser(int argc, char *const *argv) {
     uint8_t varsize = 0;
     char *m_arg = NULL, *d_arg = NULL;
     int opt;
@@ -44,14 +44,14 @@ LogicExpData logic_expression_parser(int argc, char *const *argv) {
     uint16_t *interms = (m_arg) ? parse_terms(m_arg, &incount) : NULL;
     uint16_t *exterms = (d_arg) ? parse_terms(d_arg, &excount) : NULL;
 
-    return (LogicExpData) {
+    return (ParsedInput) {
         .included_terms = interms, .included_count = incount,
         .excluded_terms = exterms, .excluded_count = excount,
         .variable_count = varsize
     };
 }
 
-void free_logic_expression_data(LogicExpData *td) {
+void free_parsed_data(ParsedInput *td) {
     free(td->included_terms);
     free(td->excluded_terms);
     memset(td, 0, sizeof(*td));
