@@ -1,40 +1,98 @@
+#include <string.h>
+
 #include "../include/helper.h"
+#include "../include/bitmap.h"
+#include "../include/utils.h"
 #include "../include/parser.h"
 #include "../include/group.h"
+#include "../include/implicant.h"
 #include "../include/coverage.h"
 
-CoverageTable ct_create(uint16_t min_count, uint16_t pi_count) {
-    uint8_t **table = SAFE_ALLOC(malloc(sizeof(uint8_t *) * min_count));
-    for(uint16_t i = 0; i < min_count; i++) {
-        table[i] = SAFE_ALLOC(calloc(pi_count, sizeof(uint8_t)));
-    }
+CoverageTable ct_create(uint16_t rows, uint16_t cols, uint8_t data[]) {
+    uint8_t *table = SAFE_ALLOC(calloc(rows * cols, sizeof(uint8_t)));
+    if(data) memcpy(table, data, rows * cols * sizeof(uint8_t));
 
     return (CoverageTable) {
-        .table = table, .rows = min_count, .cols = pi_count,
-        .rmask = SAFE_ALLOC(calloc(min_count, sizeof(bool))),
-        .cmask = SAFE_ALLOC(calloc(pi_count, sizeof(bool)))
+        .table = table, .rows = rows, .cols = cols,
+        .rmask = SAFE_ALLOC(calloc(rows, sizeof(bool))),
+        .cmask = SAFE_ALLOC(calloc(cols, sizeof(bool))),
+        .emask = SAFE_ALLOC(calloc(rows, sizeof(bool))),
     };
 }
 
-uint16_t coverage_next(uint16_t term, uint16_t *mask) {
-    uint16_t isolated_bit = (*mask & -*mask);
-    *mask &= (*mask - 1);
-    return term + isolated_bit;
-}
+void ct_populate(CoverageTable *ct, const ParsedInput *data, ImpGroup *pi) {
+    size_t bitmap_size = (1 << data->variable_count) / 8;
+    uint8_t bmap[bitmap_size + 1];
 
-bool coverage_set(uint16_t term, uint16_t mask, ImpCoverage *result) {
-    if(!mask) return false; 
-    result->mins[0] = term;
-    result->mins[result->count - 1] = mask;
-    
-    for(uint16_t i = 1; i < result->count - 1; i++) {
-        result->mins[i] = coverage_next(term, &mask);
-    } return true;
-}
+    for(size_t i = 0; i < pi->size; i++) {
+        memset(bmap, 0, bitmap_size);
 
-void ct_populate(const ParsedInput *data, ImpGroup *pi) {
-    for(uint16_t i = 0; i < data->included_count; i++) {
-        // TODO: program a coverate table populator
+        Implicant imp = pi->implicants[i];
+        const int covsize = 1 << popcount(imp.mask);
+        uint16_t coverage[covsize + 1];
+
+        if(coverage_populate(&imp, coverage)) {
+            for(int k = 0; k < covsize; k++) 
+               bitmap_set(bmap, coverage[k]);
+        } else bitmap_set(bmap, imp.term);
+
+        for (size_t j = 0; j < data->included_count; j++) {
+            if (bitmap_get(bmap, data->included_terms[j])) {
+                ct_at(ct, i , j) = 1;
+            }
+        }
     }
 }
 
+void ct_destroy(CoverageTable *ct) {
+    if(!ct) return;
+    if(ct->table) free(ct->table);
+    if(ct->cmask) free(ct->cmask);
+    if(ct->rmask) free(ct->rmask);
+    if(ct->emask) free(ct->emask);
+    memset(ct, 0, sizeof(CoverageTable));
+}
+
+void ct_print(const CoverageTable *ct) {
+    printf("\nCoverage Table:\n     ");
+    for (int j = 0; j < ct->cols; j++) {
+        if (!ct->cmask[j])
+            printf("M%-2d ", j);
+    } printf("\n");
+
+    for (int i = 0; i < ct->rows; i++) {
+        if (ct->rmask[i]) continue;
+        printf("P%-2d%s ", i, ct->emask[i] ? "*" : " ");
+        for (int j = 0; j < ct->cols; j++) {
+            if (!ct->cmask[j])
+                printf(" %d  ", ct_at(ct, i, j));
+        }
+        printf("\n");
+    } printf("\n");
+}
+
+
+bool coverage_populate(const Implicant *a, uint16_t *result) {
+    if (!a->mask) return false; // nothing to populate
+
+    *(result++) = a->term; // start with the base term
+
+    uint16_t cmask = a->mask;
+
+    /**
+     * Generate all terms by flipping one don't-care bit at a time.
+     * This method walks through each set bit in the mask using Brian Kernighan's trick.
+     */
+    while (cmask) {
+        uint16_t bit = cmask & -cmask; // isolate the lowest set bit
+
+        *(result++) = a->term + bit; // add this varient to the result
+
+        cmask &= (cmask - 1); // clear the lowest set bit
+    }
+
+    // Include the final term where all don't-care bits are 1
+    *result = a->term + a->mask;
+
+    return true;
+}

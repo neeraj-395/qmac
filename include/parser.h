@@ -4,7 +4,7 @@
 #include <stddef.h>
 #include <stdint.h>
 
-typedef struct ParsedInput {
+typedef struct __parsed_input_data__ {
     uint16_t *included_terms;
     size_t    included_count;
     uint16_t *excluded_terms;

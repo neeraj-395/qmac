@@ -3,6 +3,9 @@
 #include "../include/implicant.h"
 #include "../include/group.h"
 
+#include "../include/coverage.h"
+#include "../include/reduction.h"
+
 int main(int argc, char *const *argv) {
     ParsedInput data = input_parser(argc, argv);
 
@@ -59,16 +62,28 @@ int main(int argc, char *const *argv) {
         group_update_capacity(&container, maxcomb);
     }
 
-    for(size_t i = 0; i < prime.size; i++) {
-        imp_print(&prime.implicants[i]);
-    }
-
-    // Clearn Up -> subgroups, container, prime, data
+    // clean up -> subgroups, container
     for(uint8_t i = 0; i <= data.variable_count; i++) {
         group_destroy(&sub_groups[i]);
+    } group_destroy(&container);
+
+    // coverage table creation and reduction step...
+    CoverageTable ct = ct_create(prime.size, data.included_count, NULL);
+    ct_populate(&ct, &data, &prime);
+
+    bool changed = true;
+    do { // reduciton pipeline in action...
+        changed  = false;
+        changed |= reduction_remove_essential(&ct);
+        changed |= reduction_row_dominance(&ct);
+        changed |= reduction_col_dominance(&ct);
+    } while (changed);
+
+    for(size_t i = 0; i < prime.size; i++) {
+        if(ct.emask[i]) imp_print(&prime.implicants[i]);
     }
 
-    group_destroy(&container);
+    ct_destroy(&ct);
     group_destroy(&prime);
     free_parsed_data(&data);
 

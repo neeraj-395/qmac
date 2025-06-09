@@ -25,20 +25,20 @@ uint16_t *parse_terms(char *arg, uint16_t *count) {
 ParsedInput input_parser(int argc, char *const *argv) {
     uint8_t varsize = 0;
     char *m_arg = NULL, *d_arg = NULL;
-    int opt;
+    int opt = getopt(argc, argv, "v:m:d");
 
-    while ((opt = getopt(argc, argv, "v:m:d:")) != -1) {
+    do {
         switch (opt) {
             case 'v': varsize = (uint8_t)atoi(optarg); 
                       break;
-            case 'm': m_arg = optarg; 
+            case 'm': m_arg = optarg;
                       break;
             case 'd': d_arg = optarg; 
                       break;
-            default:  print_usage(argv[0]); 
+            default:  print_usage(argv[0]);
                       exit(EXIT_FAILURE);
         }
-    }
+    } while((opt = getopt(argc, argv, "v:m:d:")) != -1);
 
     uint16_t incount = 0, excount = 0;
     uint16_t *interms = (m_arg) ? parse_terms(m_arg, &incount) : NULL;
