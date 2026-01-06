@@ -1,6 +1,6 @@
 #include <stdio.h>
 
-#include "../include/utils.h"
+#include "../include/helper.h"
 #include "../include/implicant.h"
 
 Implicant imp_create(uint16_t term, uint16_t mask, bool is_dontcare) {
@@ -35,10 +35,8 @@ void imp_set_combined(Implicant *a, Implicant *b) {
 
 void imp_print(const Implicant *a) {
     printf(
-        "<term: %-2d(%08b) | mask: %-2d(%08b) | ones_count: %-2d| combined: %d | is_dontcare: %d>\n", 
+        "<term: %-2d| mask: %-2d| ones_count: %-2d| combined: %d | is_dontcare: %d>\n", 
         a->term,
-        a->term,
-        a->mask,
         a->mask,
         a->ones_count,
         a->is_combined,

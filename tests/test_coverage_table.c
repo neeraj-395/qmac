@@ -2,7 +2,7 @@
 #include <assert.h>
 #include <string.h>
 
-#include "../include/utils.h"
+#include "../include/helper.h"
 #include "../include/coverage.h"
 #include "../include/parser.h"
 #include "../include/group.h"

@@ -3,6 +3,7 @@
 
 #include <stdio.h>
 #include <stdlib.h>
+#include <stdint.h>
 
 static inline void *__safe_alloc__(void *ptr, const char *file, int line) {
     if (!ptr) {
@@ -21,5 +22,9 @@ static inline void *__safe_alloc__(void *ptr, const char *file, int line) {
 #define WARN(message) do { \
     fprintf(stderr, "[WARN] %s\n", message); \
 } while(0)
+
+uint16_t nCr(uint8_t n, uint8_t r);
+unsigned popcount(unsigned n);
+uint32_t max_combination(uint8_t var_count, uint8_t minimization_level);
 
 #endif

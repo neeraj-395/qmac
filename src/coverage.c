@@ -2,7 +2,6 @@
 
 #include "../include/helper.h"
 #include "../include/bitmap.h"
-#include "../include/utils.h"
 #include "../include/parser.h"
 #include "../include/group.h"
 #include "../include/implicant.h"

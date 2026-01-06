@@ -1,8 +1,7 @@
-#include "../include/utils.h"
 #include "../include/parser.h"
 #include "../include/implicant.h"
 #include "../include/group.h"
-
+#include "../include/helper.h"
 #include "../include/coverage.h"
 #include "../include/reduction.h"
 
@@ -58,10 +57,9 @@ int main(int argc, char *const *argv) {
         iteration++;
 
         maxcomb = max_combination(data.variable_count, iteration);
-        if(maxcomb < container.capacity) continue;
-        group_update_capacity(&container, maxcomb);
+        if (maxcomb > container.capacity) group_update_capacity(&container, maxcomb);
     }
-
+    
     // clean up -> subgroups, container
     for(uint8_t i = 0; i <= data.variable_count; i++) {
         group_destroy(&sub_groups[i]);
