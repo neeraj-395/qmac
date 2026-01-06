@@ -1,24 +1,19 @@
 #ifndef PARSER_H
 #define PARSER_H
 
-#include <stddef.h>
 #include <stdint.h>
 
-typedef struct __parsed_input_data__ {
-    uint16_t *included_terms;
-    size_t    included_count;
-    uint16_t *excluded_terms;
-    size_t    excluded_count;
-    uint8_t   variable_count;
+typedef struct
+{
+    uint16_t    *minterms;
+    uint16_t    *dontcares;
+    uint16_t     minterm_count;
+    uint16_t     dontcare_count;
+    uint8_t      variable_count;
 } ParsedInput;
 
-void print_usage(const char *prog_name);
+ParsedInput parse_input(int argc, char *const *argv);
 
-uint16_t *parse_terms(char *arg, uint16_t *count);
+void free_parsed_data(ParsedInput *data);
 
-ParsedInput input_parser(int argc, char *const *argv);
-
-void free_parsed_data(ParsedInput *td);
-
-
-#endif // PARSER_H
+#endif
