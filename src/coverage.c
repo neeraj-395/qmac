@@ -36,8 +36,8 @@ void ct_populate(CoverageTable *ct, const ParsedInput *data, ImpGroup *pi) {
                bitmap_set(bmap, coverage[k]);
         } else bitmap_set(bmap, imp.term);
 
-        for (size_t j = 0; j < data->included_count; j++) {
-            if (bitmap_get(bmap, data->included_terms[j])) {
+        for (size_t j = 0; j < data->minterm_count; j++) {
+            if (bitmap_get(bmap, data->minterms[j])) {
                 ct_at(ct, i , j) = 1;
             }
         }

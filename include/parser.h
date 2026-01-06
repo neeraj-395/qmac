@@ -3,7 +3,7 @@
 
 #include <stdint.h>
 
-typedef struct
+typedef struct __parsed_input_data__
 {
     uint16_t    *minterms;
     uint16_t    *dontcares;

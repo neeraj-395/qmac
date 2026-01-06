@@ -19,7 +19,7 @@ static void usage(const char *prog)
     exit(EXIT_FAILURE);
 }
 
-uint16_t *parse_list(const char *arg, uint16_t *count)
+static uint16_t *parse_list(const char *arg, uint16_t *count)
 {
     char *buffer = SAFE_ALLOC(strdup(arg));
 

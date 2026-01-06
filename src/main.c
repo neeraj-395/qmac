@@ -7,7 +7,7 @@
 #include "../include/reduction.h"
 
 int main(int argc, char *const *argv) {
-    ParsedInput data = input_parser(argc, argv);
+    ParsedInput data = parse_input(argc, argv);
 
     ImpGroup sub_groups[data.variable_count + 1];
 
@@ -15,13 +15,13 @@ int main(int argc, char *const *argv) {
         sub_groups[i] = group_create(data.variable_count);
     }
 
-    for (size_t i = 0; i < data.included_count; i++) {
-        Implicant in = imp_create(data.included_terms[i], DEFAULT_MASK, false);
+    for (size_t i = 0; i < data.minterm_count; i++) {
+        Implicant in = imp_create(data.minterms[i], DEFAULT_MASK, false);
         group_add_minterm(&sub_groups[in.ones_count], in);
     }
 
-    for (size_t i = 0; i < data.excluded_count; i++) {
-        Implicant ex = imp_create(data.excluded_terms[i], DEFAULT_MASK, true);
+    for (size_t i = 0; i < data.dontcare_count; i++) {
+        Implicant ex = imp_create(data.dontcares[i], DEFAULT_MASK, true);
         group_add_minterm(&sub_groups[ex.ones_count], ex);
     }
 
@@ -68,7 +68,7 @@ int main(int argc, char *const *argv) {
     } group_destroy(&container);
 
     // coverage table creation and reduction step...
-    CoverageTable ct = ct_create(prime.size, data.included_count, NULL);
+    CoverageTable ct = ct_create(prime.size, data.minterm_count, NULL);
     ct_populate(&ct, &data, &prime);
 
     bool changed = true;

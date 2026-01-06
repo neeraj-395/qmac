@@ -11,10 +11,10 @@
 
 void test_coverage_table_simple() {
     ParsedInput data = {
-        .included_terms = (uint16_t[]) {1, 2, 3, 4, 5, 6, 7},
-        .included_count = 7,
-        .excluded_terms = NULL,
-        .excluded_count = 0,
+        .minterms = (uint16_t[]) {1, 2, 3, 4, 5, 6, 7},
+        .minterm_count = 7,
+        .dontcares = NULL,
+        .dontcare_count = 0,
         .variable_count = 3
     };
 
@@ -29,7 +29,7 @@ void test_coverage_table_simple() {
 
     group_print(&group, "example");
 
-    CoverageTable ct = ct_create(group.size, data.included_count, NULL);
+    CoverageTable ct = ct_create(group.size, data.minterm_count, NULL);
     ct_populate(&ct, &data, &group);
 
     ct_print(&ct);
@@ -41,7 +41,7 @@ void test_coverage_table_simple() {
     };
 
     for (uint8_t row = 0; row < group.size; row++) {
-        assert(memcmp(&ct_at(&ct, row, 0), expected[row], sizeof(uint8_t) * data.included_count) == 0);
+        assert(memcmp(&ct_at(&ct, row, 0), expected[row], sizeof(uint8_t) * data.minterm_count) == 0);
     }
 
     ct_destroy(&ct);
