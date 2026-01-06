@@ -7,6 +7,7 @@
 #include "../include/group.h"
 
 ImpGroup group_create(size_t capacity) {
+    if (capacity == 0) capacity = 1;
     return (ImpGroup) { 
         .implicants = SAFE_ALLOC(malloc(capacity * sizeof(Implicant))), 
         .size = 0, .capacity = capacity
@@ -14,9 +15,9 @@ ImpGroup group_create(size_t capacity) {
 }
 
 void group_update_capacity(ImpGroup *a, size_t newcapacity) {
-    const size_t newsize = newcapacity * sizeof(Implicant);
-    a->implicants = SAFE_ALLOC(realloc(a->implicants, newsize));
-    if(newcapacity < a->size) a->size = newcapacity;
+    a->implicants = SAFE_ALLOC(
+        realloc(a->implicants, newcapacity * sizeof(Implicant))
+    );
     a->capacity = newcapacity;
 }
 
@@ -28,9 +29,9 @@ void group_add_minterm(ImpGroup *a, const Implicant min) {
     a->implicants[a->size++] = min;
 }
 
-void group_clear(ImpGroup *a) {
-    memset(a->implicants, 0, a->capacity * sizeof(Implicant));
-    a->size = 0;
+void group_clear(ImpGroup *g)
+{
+    g->size = 0;
 }
 
 void group_destroy(ImpGroup *a) {
@@ -38,14 +39,24 @@ void group_destroy(ImpGroup *a) {
     memset(a, 0, sizeof(ImpGroup));
 }
 
-void group_combine(const ImpGroup *a, const ImpGroup *b, ImpGroup *c) {
+static bool group_contains(const ImpGroup *g, const Implicant *imp)
+{
+    for (size_t i = 0; i < g->size; i++) {
+        if (g->implicants[i].term == imp->term &&
+            g->implicants[i].mask == imp->mask)
+            return true;
+    }
+    return false;
+}
+
+void group_combine(ImpGroup *a, ImpGroup *b, ImpGroup *c) {
     for(size_t i = 0; i < a->size; i++) {
         for(size_t j = 0; j < b->size; j++) {
             if(!imp_can_combine(&a->implicants[i], &b->implicants[j])) continue;
             imp_set_combined(&a->implicants[i], &b->implicants[j]);
 
-            if(imp_implies(&a->implicants[i], &b->implicants[j])) continue;
-            group_add_minterm(c, imp_combine(&a->implicants[i], &b->implicants[j]));
+            Implicant comb = imp_combine(&a->implicants[i], &b->implicants[j]);
+            if(!group_contains(c, &comb)) group_add_minterm(c, comb);
         }
     }
 }
@@ -65,7 +76,12 @@ void group_describe(const ImpGroup *a, const char *name) {
 }
 
 void group_print(const ImpGroup *a, const char* name) {
-    printf("<Group[%s]: %p -> size: %lu -> capacity: %lu>\n",
-            name, a->implicants, a->size, a->capacity);
+    printf(
+        "<group: %p (%s) | size: %lu | capacity: %lu>\n",
+        a->implicants, 
+        name,
+        a->size, 
+        a->capacity
+    );
     for(size_t j = 0; j < a->size; j++) imp_print(&a->implicants[j]);
 }

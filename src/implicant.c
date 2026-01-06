@@ -35,7 +35,7 @@ void imp_set_combined(Implicant *a, Implicant *b) {
 
 void imp_print(const Implicant *a) {
     printf(
-        "<term: %-2d (%08b) | mask: %-2d (%08b) | ones_count: %-2d| combined: %d | is_dontcare: %d>\n", 
+        "<term: %-2d(%08b) | mask: %-2d(%08b) | ones_count: %-2d| combined: %d | is_dontcare: %d>\n", 
         a->term,
         a->term,
         a->mask,
