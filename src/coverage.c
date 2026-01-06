@@ -31,8 +31,7 @@ void ct_populate(CoverageTable *ct, const ParsedInput *data, ImpGroup *pi) {
         uint16_t coverage[covsize + 1];
 
         if(coverage_populate(&imp, coverage)) {
-            for(int k = 0; k < covsize; k++) 
-               bitmap_set(bmap, coverage[k]);
+            for(int k = 0; k < covsize; k++) bitmap_set(bmap, coverage[k]);
         } else bitmap_set(bmap, imp.term);
 
         for (size_t j = 0; j < data->minterm_count; j++) {
@@ -71,27 +70,32 @@ void ct_print(const CoverageTable *ct) {
 }
 
 
-bool coverage_populate(const Implicant *a, uint16_t *result) {
-    if (!a->mask) return false; // nothing to populate
-
-    *(result++) = a->term; // start with the base term
-
-    uint16_t cmask = a->mask;
-
-    /**
-     * Generate all terms by flipping one don't-care bit at a time.
-     * This method walks through each set bit in the mask using Brian Kernighan's trick.
-     */
-    while (cmask) {
-        uint16_t bit = cmask & -cmask; // isolate the lowest set bit
-
-        *(result++) = a->term + bit; // add this varient to the result
-
-        cmask &= (cmask - 1); // clear the lowest set bit
+bool coverage_populate(const Implicant *imp, uint16_t *out)
+{
+    if (!imp->mask) {
+        out[0] = imp->term;
+        return false;
     }
 
-    // Include the final term where all don't-care bits are 1
-    *result = a->term + a->mask;
+    uint16_t mask = imp->mask;
+    uint8_t pos[16];
+    uint8_t k = 0;
+
+    for (uint8_t i = 0; i < 16; i++) {
+        if (mask & (1u << i))
+            pos[k++] = i;
+    }
+
+    uint16_t count = 1u << k;
+
+    for (uint16_t i = 0; i < count; i++) {
+        uint16_t t = imp->term;
+        for (uint8_t j = 0; j < k; j++) {
+            if (i & (1u << j))
+                t |= (1u << pos[j]);
+        }
+        out[i] = t;
+    }
 
     return true;
 }

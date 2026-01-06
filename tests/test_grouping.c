@@ -4,6 +4,7 @@
 
 #include "../include/group.h"
 #include "../include/implicant.h"
+#include "../include/helper.h"
 
 static Implicant M(uint16_t term)
 {
@@ -137,7 +138,6 @@ int main(void)
     test_group_no_invalid_combine();
     test_group_uncombined_terms();
     test_group_duplicate_elimination();
-
-    printf("All grouping tests passed \t\\[^_^]/\n");
+    TEST_OK("grouping tests passed");
     return 0;
 }

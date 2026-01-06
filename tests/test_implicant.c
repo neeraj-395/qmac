@@ -3,6 +3,7 @@
 #include <assert.h>
 
 #include "../include/implicant.h"
+#include "../include/helper.h"
 
 static Implicant M(uint16_t term)
 {
@@ -86,7 +87,6 @@ int main(void)
     test_imp_masked_combine();
     test_imp_implies();
     test_imp_set_combined();
-
-    printf("All implicant tests passed \t\\[^_^]/\n");
+    TEST_OK("implicant tests passed");
     return 0;
 }

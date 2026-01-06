@@ -2,8 +2,10 @@
 #include <stdint.h>
 
 typedef enum __dominance_type__ { 
-    A_DOMINATES, B_DOMINATES, 
-    NO_DOMINANCE, EQUAL
+    A_DOMINATES, 
+    B_DOMINATES, 
+    NO_DOMINANCE, 
+    EQUAL
 } Dominance;
 
 static inline Dominance check_dominance(

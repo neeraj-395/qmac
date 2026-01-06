@@ -15,6 +15,8 @@ static inline void *__safe_alloc__(void *ptr, const char *file, int line) {
 
 #define SAFE_ALLOC(expr) __safe_alloc__((expr), __FILE__, __LINE__)
 
+#define TEST_OK(name) printf("%-36s ....... \\[^_^]/\n", name)
+
 #define DIE(message) do { \
     fprintf(stderr, "[ERROR] %s\n", message); exit(EXIT_FAILURE); \
 } while(0)

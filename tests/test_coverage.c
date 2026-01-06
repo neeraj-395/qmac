@@ -1,70 +1,70 @@
-#include <stdio.h>
-#include <stdint.h>
 #include <assert.h>
 #include <stdbool.h>
+#include <stdint.h>
+#include <stdio.h>
 
 #include "../include/implicant.h"
 #include "../include/coverage.h"
+#include "../include/helper.h"
 
-void test_coverage_populate_basic() {
+static void test_basic_mask_expansion(void)
+{
     Implicant a = {
         .term = 0b1000,
         .mask = 0b0110,
-        .ones_count = 0,
         .is_combined = false,
         .is_dontcare = false
     };
 
-    uint16_t result[8] = {0};
-    bool ok = coverage_populate(&a, result);
+    uint16_t out[4] = {0};
+    bool ok = coverage_populate(&a, out);
 
     assert(ok == true);
-    assert(result[0] == 8);
-    assert(result[1] == 10);
-    assert(result[2] == 12);
-    assert(result[3] == 14);
+    assert(out[0] == 8);
+    assert(out[1] == 10);
+    assert(out[2] == 12);
+    assert(out[3] == 14);
 }
 
-void test_coverage_populate_nonzero_term() {
+static void test_single_bit_mask(void)
+{
     Implicant a = {
         .term = 0b0100,
         .mask = 0b0001,
-        .ones_count = 0,
         .is_combined = false,
         .is_dontcare = false
     };
 
-    uint16_t result[4] = {0};
-    bool ok = coverage_populate(&a, result);
+    uint16_t out[2] = {0};
+    bool ok = coverage_populate(&a, out);
 
     assert(ok == true);
-    assert(result[0] == 0b0100);
-    assert(result[1] == 0b0101);
-    assert(result[2] == 0b0101);
+    assert(out[0] == 4);
+    assert(out[1] == 5);
 }
 
-void test_coverage_populate_zero_mask() {
+static void test_zero_mask(void)
+{
     Implicant a = {
-        .term = 5,
+        .term = 7,
         .mask = 0,
-        .ones_count = 0,
         .is_combined = false,
         .is_dontcare = false
     };
 
-    uint16_t result[4] = {123, 123, 123, 123};
-    bool ok = coverage_populate(&a, result);
+    uint16_t out[1] = {123};
+    bool ok = coverage_populate(&a, out);
 
     assert(ok == false);
-    assert(result[0] == 123);
 }
 
-// ----------- Main ----------
-int main() {
-    test_coverage_populate_basic();
-    test_coverage_populate_nonzero_term();
-    test_coverage_populate_zero_mask();
 
-    printf("Coverage populate tests passed \t\\[^_^]/\n");
+int main(void)
+{
+    test_basic_mask_expansion();
+    test_single_bit_mask();
+    test_zero_mask();
+
+    TEST_OK("coverage_populate tests passed");
     return 0;
 }
